@@ -50,9 +50,7 @@ public class OrderService {
 
     @Transactional
     public void ProcessInventoryFailed(OrderDTO response) {
-
-        Order order = orderRepository.findById(response.getOrder_id())
-                .orElseThrow(() -> new RuntimeException("order not found. order id: " + response.getOrder_id()));
+        Order order = getOrderById(response.getOrder_id());
 
         order.setOrderStatus(OrderStatus.CANCELLED);
 
@@ -61,9 +59,7 @@ public class OrderService {
 
     @Transactional
     public void ProcessPaymentFailed(OrderDTO response) {
-
-        Order order = orderRepository.findById(response.getOrder_id())
-                .orElseThrow(() -> new RuntimeException("order not found. order id: " + response.getOrder_id()));
+        Order order = getOrderById(response.getOrder_id());
 
         order.setOrderStatus(OrderStatus.CANCELLED);
 
@@ -72,12 +68,43 @@ public class OrderService {
 
     @Transactional
     public void ProcessPaymentApproved(OrderDTO response) {
-
-        Order order = orderRepository.findById(response.getOrder_id())
-                .orElseThrow(() -> new RuntimeException("order not found. order id: " + response.getOrder_id()));
+        Order order = getOrderById(response.getOrder_id());
 
         order.setOrderStatus(OrderStatus.APPROVED);
 
         orderRepository.save(order);
+    }
+
+
+    private OrderDTO mapToDTO(Order order){
+        List<OrderDTO.OrderItemDTO> items = order.getItems().stream()
+                .map(item -> new OrderDTO.OrderItemDTO(
+                        item.getItemId(),
+                        item.getQuantity()
+                )).toList();
+
+        return new OrderDTO(
+                order.getUserId(),
+                order.getId(),
+                order.getTotalCost(),
+                order.getOrderStatus(),
+                items
+        );
+    }
+
+    @Transactional
+    public OrderDTO getOrderDTOById(Long orderId){
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new RuntimeException("order not found. order id: " + orderId)
+        );
+
+        return mapToDTO(order);
+    }
+
+    @Transactional
+    public Order getOrderById(Long orderId){
+        return orderRepository.findById(orderId).orElseThrow(
+                () -> new RuntimeException("order not found. order id: " + orderId)
+        );
     }
 }

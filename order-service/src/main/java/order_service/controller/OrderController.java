@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/orders")
@@ -24,5 +21,11 @@ public class OrderController {
     public ResponseEntity<OrderDTO> orderCreated(@RequestBody OrderDTO requestOrder){
         log.info("called createOrder method");
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(requestOrder));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long id){
+        log.info("called getOrderById, id={}", id);
+        return ResponseEntity.ok(orderService.getOrderDTOById(id));
     }
 }

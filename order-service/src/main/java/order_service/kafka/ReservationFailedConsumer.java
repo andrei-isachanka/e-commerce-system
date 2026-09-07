@@ -1,5 +1,6 @@
 package order_service.kafka;
 
+import order_service.dto.InventoryFailedEvent;
 import order_service.dto.OrderDTO;
 import order_service.models.Order;
 import order_service.service.OrderService;
@@ -17,9 +18,16 @@ public class ReservationFailedConsumer {
         this.orderService = orderService;
     }
 
-    @KafkaListener(topics = "inventory-failed", groupId = "inventory-failed-group")
-    public void ListenInventoryFailedEvent(OrderDTO response){
-        orderService.ProcessInventoryFailed(response);
-        log.info("received order with id {}, inventory service response: out of stock", response.getOrder_id());
+    //@KafkaListener(topics = "inventory-failed", groupId = "inventory-failed-group")
+    @KafkaListener(
+            topics = "inventory-failed",
+            groupId = "inventory-failed-group",
+            properties = {
+                    "spring.json.value.default.type=order_service.dto.InventoryFailedEvent",
+                    "spring.json.use.type.headers=false"
+            })
+    public void ListenInventoryFailedEvent(InventoryFailedEvent event){
+        orderService.ProcessInventoryFailed(event);
+        log.info("received order with id {}, inventory service response: out of stock", event.getOrder_id());
     }
 }

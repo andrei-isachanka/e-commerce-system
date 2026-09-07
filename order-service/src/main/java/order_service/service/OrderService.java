@@ -1,6 +1,7 @@
 package order_service.service;
 
 import jakarta.transaction.Transactional;
+import order_service.dto.InventoryFailedEvent;
 import order_service.dto.OrderDTO;
 import order_service.enums.OrderStatus;
 import order_service.kafka.OrderProducer;
@@ -49,8 +50,8 @@ public class OrderService {
     }
 
     @Transactional
-    public void ProcessInventoryFailed(OrderDTO response) {
-        Order order = getOrderById(response.getOrder_id());
+    public void ProcessInventoryFailed(InventoryFailedEvent event) {
+        Order order = getOrderById(event.getOrder_id());
 
         order.setOrderStatus(OrderStatus.CANCELLED);
 

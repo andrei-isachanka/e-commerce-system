@@ -13,7 +13,21 @@ public class OrderProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendOrderCreatedMessage(OrderDTO orderDTO){
-        kafkaTemplate.send(TOPIC, orderDTO);
+
+    public void sendOrderCreatedMessage(OrderDTO orderDTO) {
+        String key = String.valueOf(orderDTO.getOrder_id());
+
+        kafkaTemplate.send(TOPIC, key, orderDTO);
     }
+
+
+
+
+   /* public void sendOrderCreatedMessage(OrderDTO orderDTO){
+        String key = String.valueOf(orderDTO.getOrder_id());
+
+        kafkaTemplate.send(TOPIC, key, orderDTO);
+
+
+    }*/
 }

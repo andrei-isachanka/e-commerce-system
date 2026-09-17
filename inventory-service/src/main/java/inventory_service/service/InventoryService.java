@@ -11,6 +11,7 @@ import inventory_service.repository.ProductRepository;
 import inventory_service.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class InventoryService {
@@ -140,5 +142,41 @@ public class InventoryService {
                 throw new IllegalArgumentException("Quantity must be greater then 0. Item id=" + item.getItemId());
             }
         }
+    }
+
+    @Transactional
+    public void releaseReservation(Long orderId) {
+        Reservation reservation = reservationRepository
+                .findByOrderId(orderId)
+                .orElse(null);
+
+        if (reservation == null) {
+            log.error("Reservation not found for orderId={}", orderId);
+            return;
+        }
+
+        if (reservation.getStatus() == ReservationStatus.RELEASED) {
+            log.info("Reservation already released. orderId={}", orderId);
+            return;
+        }
+
+        for (ReservationItem item : reservation.getItems()) {
+            Product product = productRepository.findById(item.getItemId())
+                    .orElseThrow(() -> new IllegalStateException(
+                            "Product not found, id=" + item.getItemId()
+                    ));
+
+            product.setAvailableQuantity(
+                    product.getAvailableQuantity() + item.getQuantity()
+            );
+
+            productRepository.save(product);
+        }
+
+        reservation.setStatus(ReservationStatus.RELEASED);
+        reservation.setReleasedAt(OffsetDateTime.now());
+        reservationRepository.save(reservation);
+
+        log.info("Reservation released after payment failure. orderId={}", orderId);
     }
 }

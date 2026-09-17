@@ -3,8 +3,11 @@ package order_service.service;
 import jakarta.transaction.Transactional;
 import order_service.dto.InventoryFailedEvent;
 import order_service.dto.OrderDTO;
+import order_service.dto.PaymentApprovedEvent;
+import order_service.dto.PaymentFailedEvent;
 import order_service.enums.OrderStatus;
 import order_service.kafka.OrderProducer;
+import order_service.kafka.PaymentApprovedConsumer;
 import order_service.models.Order;
 import order_service.models.OrderItem;
 import order_service.repository.OrderRepository;
@@ -59,8 +62,8 @@ public class OrderService {
     }
 
     @Transactional
-    public void ProcessPaymentFailed(OrderDTO response) {
-        Order order = getOrderById(response.getOrder_id());
+    public void ProcessPaymentFailed(PaymentFailedEvent event) {
+        Order order = getOrderById(event.getOrderId());
 
         order.setOrderStatus(OrderStatus.CANCELLED);
 
@@ -68,8 +71,8 @@ public class OrderService {
     }
 
     @Transactional
-    public void ProcessPaymentApproved(OrderDTO response) {
-        Order order = getOrderById(response.getOrder_id());
+    public void ProcessPaymentApproved(PaymentApprovedEvent event) {
+        Order order = getOrderById(event.getOrderId());
 
         order.setOrderStatus(OrderStatus.APPROVED);
 

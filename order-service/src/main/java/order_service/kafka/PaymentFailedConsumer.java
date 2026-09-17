@@ -1,6 +1,7 @@
 package order_service.kafka;
 
 import order_service.dto.OrderDTO;
+import order_service.dto.PaymentFailedEvent;
 import order_service.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +17,11 @@ public class PaymentFailedConsumer {
         this.orderService = orderService;
     }
 
-    @KafkaListener(topics = "payment-failed", groupId = "payment-failed-group")
-    public void ListenPaymentFailedEvent(OrderDTO response){
-        orderService.ProcessPaymentFailed(response);
-        log.info("received order with id {}, payment service response: payment rejected", response.getOrder_id());
+    @KafkaListener(topics = "payment-failed", groupId = "payment-failed-group",
+            properties = "spring.json.value.default.type=order_service.dto.PaymentFailedEvent"
+    )
+    public void ListenPaymentFailedEvent(PaymentFailedEvent event){
+        orderService.ProcessPaymentFailed(event);
+        log.info("received order with id {}, payment service response: payment rejected", event.getOrderId());
     }
 }

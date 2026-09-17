@@ -1,6 +1,7 @@
 package order_service.kafka;
 
 import order_service.dto.OrderDTO;
+import order_service.dto.PaymentApprovedEvent;
 import order_service.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +17,11 @@ public class PaymentApprovedConsumer {
         this.orderService = orderService;
     }
 
-    @KafkaListener(topics = "payment-approved", groupId = "payment-approved-group")
-    public void ListenPaymentApprovedEvent(OrderDTO response){
-        orderService.ProcessPaymentApproved(response);
-        log.info("received order with id {}, payment service response: payment approved", response.getOrder_id());
+    @KafkaListener(topics = "payment-approved", groupId = "payment-approved-group",
+            properties = "spring.json.value.default.type=order_service.dto.PaymentApprovedEvent"
+    )
+    public void ListenPaymentApprovedEvent(PaymentApprovedEvent event){
+        orderService.ProcessPaymentApproved(event);
+        log.info("received order with id {}, payment service response: payment approved", event.getOrderId());
     }
 }

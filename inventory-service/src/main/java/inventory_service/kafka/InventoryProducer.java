@@ -2,9 +2,10 @@ package inventory_service.kafka;
 
 import inventory_service.dto.InventoryFailedEvent;
 import inventory_service.dto.InventoryReservedEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-
+@Slf4j
 @Service
 public class InventoryProducer {
 
@@ -22,7 +23,15 @@ public class InventoryProducer {
                 INVENTORY_RESERVED_TOPIC,
                 String.valueOf(event.getOrderId()),
                 event
-        );
+        ).whenComplete((result, exception) -> {
+            if (exception != null) {
+                log.error(
+                        "Failed to send inventory-reserved. orderId={}",
+                        event.getOrderId(),
+                        exception
+                );
+            }
+        });
     }
 
     public void sendInventoryFailed(InventoryFailedEvent event) {

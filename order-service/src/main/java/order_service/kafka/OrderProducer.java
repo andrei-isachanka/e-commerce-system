@@ -9,7 +9,7 @@ public class OrderProducer {
     private final KafkaTemplate<String, OrderDTO> kafkaTemplate;
     private static final String TOPIC = "order";
 
-    public OrderProducer(KafkaTemplate<String, OrderDTO> kafkaTemplate){
+    public OrderProducer(KafkaTemplate<String, OrderDTO> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -19,15 +19,4 @@ public class OrderProducer {
 
         kafkaTemplate.send(TOPIC, key, orderDTO);
     }
-
-
-
-
-   /* public void sendOrderCreatedMessage(OrderDTO orderDTO){
-        String key = String.valueOf(orderDTO.getOrder_id());
-
-        kafkaTemplate.send(TOPIC, key, orderDTO);
-
-
-    }*/
 }

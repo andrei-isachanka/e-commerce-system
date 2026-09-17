@@ -18,7 +18,6 @@ public class ReservationFailedConsumer {
         this.orderService = orderService;
     }
 
-    //@KafkaListener(topics = "inventory-failed", groupId = "inventory-failed-group")
     @KafkaListener(
             topics = "inventory-failed",
             groupId = "inventory-failed-group",

@@ -69,7 +69,7 @@ class InventoryServiceTest {
     }
 
     @Test
-    void reserve_shouldReserveProductsCalculateCostAndSaveReservation() {
+    void reserve_ReserveProductsCalculateCostAndSaveReservation() {
         OrderCreatedEvent event = createOrderEvent(
                 100L,
                 List.of(
@@ -112,7 +112,7 @@ class InventoryServiceTest {
     }
 
     @Test
-    void reserve_shouldMergeQuantitiesForSameProduct() {
+    void reserve_MergeQuantitiesForSameProduct() {
         OrderCreatedEvent event = createOrderEvent(
                 101L,
                 List.of(
@@ -142,7 +142,7 @@ class InventoryServiceTest {
     }
 
     @Test
-    void reserve_shouldReturnExistingReservationWithoutDecreasingStockAgain() {
+    void reserve_ReturnExistingReservationWithoutDecreasingStockAgain() {
         OrderCreatedEvent event = createOrderEvent(
                 102L,
                 List.of(createOrderItem(1L, 2L))
@@ -169,7 +169,7 @@ class InventoryServiceTest {
     }
 
     @Test
-    void reserve_shouldThrowExceptionWhenProductDoesNotExist() {
+    void reserve_ThrowExceptionWhenProductDoesNotExist() {
         OrderCreatedEvent event = createOrderEvent(
                 103L,
                 List.of(createOrderItem(999L, 1L))
@@ -192,7 +192,7 @@ class InventoryServiceTest {
     }
 
     @Test
-    void reserve_shouldThrowExceptionWhenStockIsNotEnough() {
+    void reserve_ThrowExceptionWhenStockIsNotEnough() {
         OrderCreatedEvent event = createOrderEvent(
                 104L,
                 List.of(createOrderItem(1L, 11L))
@@ -220,7 +220,7 @@ class InventoryServiceTest {
     }
 
     @Test
-    void reserve_shouldThrowExceptionWhenItemsAreEmpty() {
+    void reserve_ThrowExceptionWhenItemsAreEmpty() {
         OrderCreatedEvent event = createOrderEvent(105L, List.of());
 
         IllegalArgumentException exception = assertThrows(
@@ -238,7 +238,7 @@ class InventoryServiceTest {
     }
 
     @Test
-    void releaseReservation_shouldRestoreProductQuantitiesAndMarkReservationReleased() {
+    void releaseReservation_RestoreProductQuantitiesAndMarkReservationReleased() {
         Reservation reservation = new Reservation();
         reservation.setOrderId(200L);
         reservation.setStatus(ReservationStatus.RESERVED);
@@ -271,7 +271,7 @@ class InventoryServiceTest {
     }
 
     @Test
-    void releaseReservation_shouldNotReleaseProductsAgainWhenAlreadyReleased() {
+    void releaseReservation_NotReleaseProductsAgainWhenAlreadyReleased() {
         Reservation reservation = new Reservation();
         reservation.setOrderId(201L);
         reservation.setStatus(ReservationStatus.RELEASED);
@@ -292,7 +292,7 @@ class InventoryServiceTest {
     }
 
     @Test
-    void releaseReservation_shouldDoNothingWhenReservationDoesNotExist() {
+    void releaseReservation_DoNothingWhenReservationDoesNotExist() {
         when(reservationRepository.findByOrderId(202L))
                 .thenReturn(Optional.empty());
 
@@ -304,7 +304,7 @@ class InventoryServiceTest {
     }
 
     @Test
-    void releaseReservation_shouldThrowExceptionWhenReservedProductDoesNotExist() {
+    void releaseReservation_ThrowExceptionWhenReservedProductDoesNotExist() {
         Reservation reservation = new Reservation();
         reservation.setOrderId(203L);
         reservation.setStatus(ReservationStatus.RESERVED);

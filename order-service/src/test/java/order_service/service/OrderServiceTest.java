@@ -56,7 +56,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void createOrder_shouldSavePendingOrderAndSendOrderCreatedEvent() {
+    void createOrder_SavePendingOrderAndSendOrderCreatedEvent() {
         OrderDTO requestOrder = new OrderDTO(
                 10L,
                 null,
@@ -98,7 +98,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void createOrder_shouldCreateOrderWithoutItemsWhenItemsAreNull() {
+    void createOrder_CreateOrderWithoutItemsWhenItemsAreNull() {
         OrderDTO requestOrder = new OrderDTO(
                 15L,
                 null,
@@ -130,7 +130,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void processInventoryFailed_shouldChangeOrderStatusToCancelled() {
+    void processInventoryFailed_ChangeOrderStatusToCancelled() {
         Order order = createOrder(50L, OrderStatus.PENDING);
 
         InventoryFailedEvent event = mock(InventoryFailedEvent.class);
@@ -145,7 +145,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void processPaymentFailed_shouldChangeOrderStatusToCancelled() {
+    void processPaymentFailed_ChangeOrderStatusToCancelled() {
         Order order = createOrder(51L, OrderStatus.PENDING);
 
         PaymentFailedEvent event = mock(PaymentFailedEvent.class);
@@ -160,7 +160,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void processPaymentApproved_shouldChangeOrderStatusToApproved() {
+    void processPaymentApproved_ChangeOrderStatusToApproved() {
         Order order = createOrder(52L, OrderStatus.PENDING);
 
         PaymentApprovedEvent event = mock(PaymentApprovedEvent.class);
@@ -175,7 +175,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void getOrderDTOById_shouldReturnMappedOrderDTO() {
+    void getOrderDTOById_ReturnMappedOrderDTO() {
         Order order = createOrder(60L, OrderStatus.APPROVED);
         order.setUserId(25L);
         order.setTotalCost(new BigDecimal("1200.50"));
@@ -213,7 +213,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void getOrderDTOById_shouldThrowExceptionWhenOrderDoesNotExist() {
+    void getOrderDTOById_ThrowExceptionWhenOrderDoesNotExist() {
         when(orderRepository.findById(999L)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(

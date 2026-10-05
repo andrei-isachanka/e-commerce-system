@@ -1,0 +1,41 @@
+stages:
+  - verify
+
+default:
+  image: maven:3.9-eclipse-temurin-17
+  tags:
+    - local-docker
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  DOCKER_HOST: "unix:///var/run/docker.sock"
+  TESTCONTAINERS_HOST_OVERRIDE: "host.docker.internal"
+
+verify-service:
+  stage: verify
+
+  parallel:
+    matrix:
+      - SERVICE:
+          - order-service
+          - inventory-service
+          - payment-service
+
+  cache:
+    key: "maven-$SERVICE"
+    paths:
+      - .m2/repository/
+
+  script:
+    - mvn --version
+    - mvn --batch-mode --no-transfer-progress -f "$SERVICE/pom.xml" clean verify -DfailIfNoTests=true
+
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - "$SERVICE/target/*.jar"
+      - "$SERVICE/target/surefire-reports/"
+    reports:
+      junit:
+        - "$SERVICE/target/surefire-reports/TEST-*.xml"
